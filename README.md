@@ -351,6 +351,18 @@
         <div class="section-title">⚙️ إعدادات التوليد</div>
 
         <div class="input-group">
+            <label for="wordListType">📚 نوع قائمة الكلمات:</label>
+            <select id="wordListType" onchange="updateWordListInfo()">
+                <option value="3chars">قائمة الـ 3 أحرف (104 كلمات)</option>
+                <option value="4chars">قائمة الـ 4 أحرف BIP-39 (2048 كلمة)</option>
+            </select>
+        </div>
+
+        <div id="wordListInfo" style="background: #e7f3ff; padding: 10px; border-radius: 8px; margin-bottom: 20px; font-size: 13px; color: #0066cc; border: 1px solid #b3d9ff;">
+            📖 تم تحديد قائمة الـ 3 أحرف - 104 كلمات متاحة
+        </div>
+
+        <div class="input-group">
             <label>📝 طول العبارة:</label>
             <div class="radio-group">
                 <div class="radio-option">
@@ -441,9 +453,11 @@
         }
 
         // ============================================
-        // قائمة الكلمات
+        // قوائم الكلمات
         // ============================================
-        const wordList = [
+
+        // قائمة الـ 3 أحرف
+        const wordList3Chars = [
             'act', 'add', 'age', 'aim', 'air', 'all', 'any', 'arm', 'art', 'ask',
             'bag', 'bar', 'bid', 'box', 'boy', 'bus', 'can', 'car', 'cat', 'cry',
             'cup', 'dad', 'day', 'dog', 'dry', 'egg', 'end', 'era', 'eye', 'fan',
@@ -457,6 +471,14 @@
             'win', 'you', 'zoo'
         ];
 
+        // قائمة الـ 4 أحرف (BIP-39)
+        const wordList4Chars = [
+            'able', 'acid', 'also', 'arch', 'area', 'army', 'atom', 'aunt', 'auto', 'away', 'axis', 'baby', 'ball', 'base', 'bean', 'beef', 'belt', 'best', 'bike', 'bind', 'bird', 'blue', 'blur', 'boat', 'body', 'boil', 'bomb', 'bone', 'book', 'boss', 'bulb', 'bulk', 'busy', 'buzz', 'cage', 'cake', 'call', 'calm', 'camp', 'card', 'cart', 'case', 'cash', 'cave', 'chat', 'chef', 'city', 'clap', 'claw', 'clay', 'clip', 'clog', 'club', 'code', 'coil', 'coin', 'come', 'cook', 'cool', 'copy', 'core', 'corn', 'cost', 'cram', 'crew', 'crop', 'cube', 'cute', 'damp', 'dash', 'dawn', 'deal', 'deer', 'defy', 'deny', 'desk', 'dial', 'dice', 'diet', 'dirt', 'dish', 'doll', 'door', 'dose', 'dove', 'draw', 'drip', 'drop', 'drum', 'duck', 'dumb', 'dune', 'dust', 'duty', 'earn', 'east', 'easy', 'echo', 'edge', 'edit', 'else', 'evil', 'exit', 'face', 'fade', 'fall', 'fame', 'farm', 'feed', 'feel', 'file', 'film', 'find', 'fine', 'fire', 'firm', 'fish', 'flag', 'flat', 'flee', 'flip', 'foam', 'foil', 'fold', 'food', 'foot', 'fork', 'frog', 'fuel', 'fury', 'gain', 'game', 'gasp', 'gate', 'gaze', 'gift', 'girl', 'give', 'glad', 'glow', 'glue', 'goat', 'gold', 'good', 'gown', 'grab', 'grid', 'grit', 'grow', 'hair', 'half', 'hand', 'hard', 'have', 'hawk', 'head', 'help', 'hero', 'high', 'hill', 'hint', 'hire', 'hold', 'hole', 'home', 'hood', 'hope', 'horn', 'host', 'hour', 'huge', 'hunt', 'hurt', 'icon', 'idea', 'idle', 'inch', 'into', 'iron', 'item', 'jazz', 'join', 'joke', 'jump', 'junk', 'just', 'keen', 'keep', 'kick', 'kind', 'kiss', 'kite', 'kiwi', 'knee', 'know', 'lady', 'lake', 'lamp', 'lava', 'lawn', 'lazy', 'leaf', 'left', 'lend', 'lens', 'liar', 'life', 'lift', 'like', 'limb', 'link', 'lion', 'list', 'live', 'load', 'loan', 'lock', 'long', 'loop', 'loud', 'love', 'maid', 'mail', 'main', 'make', 'mask', 'mass', 'math', 'maze', 'mean', 'meat', 'melt', 'menu', 'mesh', 'milk', 'mind', 'miss', 'moon', 'more', 'move', 'much', 'mule', 'must', 'myth', 'name', 'near', 'neck', 'need', 'nest', 'news', 'next', 'nice', 'nose', 'note', 'obey', 'odor', 'okay', 'omit', 'once', 'only', 'open', 'oval', 'oven', 'over', 'pact', 'page', 'pair', 'palm', 'park', 'pass', 'path', 'pave', 'pear', 'pill', 'pink', 'pipe', 'play', 'plug', 'poem', 'poet', 'pole', 'pond', 'pony', 'pool', 'post', 'pull', 'pulp', 'push', 'quit', 'quiz', 'race', 'rack', 'rail', 'rain', 'ramp', 'rare', 'rate', 'real', 'rely', 'rent', 'rice', 'rich', 'ride', 'ring', 'riot', 'risk', 'road', 'roof', 'room', 'rose', 'rude', 'rule', 'safe', 'sail', 'salt', 'same', 'sand', 'save', 'scan', 'seat', 'seed', 'seek', 'sell', 'shed', 'ship', 'shoe', 'shop', 'sick', 'side', 'sign', 'silk', 'sing', 'size', 'skin', 'slab', 'slam', 'slim', 'slot', 'slow', 'snap', 'snow', 'soap', 'sock', 'soda', 'soft', 'song', 'soon', 'sort', 'soul', 'soup', 'spin', 'spot', 'stay', 'stem', 'step', 'such', 'suit', 'sure', 'swap', 'swim', 'tail', 'talk', 'tank', 'tape', 'task', 'taxi', 'team', 'tell', 'tent', 'term', 'test', 'text', 'that', 'then', 'they', 'this', 'tide', 'tilt', 'time', 'tiny', 'tone', 'tool', 'toss', 'town', 'trap', 'tray', 'tree', 'trim', 'trip', 'true', 'tube', 'tuna', 'turn', 'twin', 'type', 'ugly', 'undo', 'unit', 'upon', 'urge', 'used', 'vast', 'verb', 'very', 'view', 'visa', 'void', 'vote', 'wage', 'wait', 'walk', 'wall', 'want', 'warm', 'wash', 'wasp', 'wave', 'wear', 'west', 'what', 'when', 'whip', 'wide', 'wife', 'wild', 'will', 'wine', 'wing', 'wink', 'wire', 'wise', 'wish', 'wolf', 'wood', 'wool', 'word', 'work', 'wrap', 'yard', 'year', 'zero', 'zone'
+        ];
+
+        // المتغير الحالي للقائمة المستخدمة
+        let currentWordList = wordList3Chars;
+
         // ============================================
         // متغيرات التحكم
         // ============================================
@@ -466,6 +488,28 @@
         let invalidCount = 0;
 
         // ============================================
+        // دالة تحديث معلومات قائمة الكلمات
+        // ============================================
+        function updateWordListInfo() {
+            const wordListType = document.getElementById('wordListType').value;
+            const infoDiv = document.getElementById('wordListInfo');
+
+            if (wordListType === '3chars') {
+                currentWordList = wordList3Chars;
+                infoDiv.textContent = '📖 تم تحديد قائمة الـ 3 أحرف - 104 كلمات متاحة';
+                infoDiv.style.background = '#e7f3ff';
+                infoDiv.style.color = '#0066cc';
+                infoDiv.style.borderColor = '#b3d9ff';
+            } else {
+                currentWordList = wordList4Chars;
+                infoDiv.textContent = '📖 تم تحديد قائمة الـ 4 أحرف (BIP-39) - 2048 كلمة متاحة';
+                infoDiv.style.background = '#fff3cd';
+                infoDiv.style.color = '#856404';
+                infoDiv.style.borderColor = '#ffeaa7';
+            }
+        }
+
+        // ============================================
         // دوال التوليد والتحويل
         // ============================================
 
@@ -473,8 +517,8 @@
         function generateRandomPhrase(length) {
             const phrase = [];
             for (let i = 0; i < length; i++) {
-                const randomIndex = Math.floor(Math.random() * wordList.length);
-                phrase.push(wordList[randomIndex]);
+                const randomIndex = Math.floor(Math.random() * currentWordList.length);
+                phrase.push(currentWordList[randomIndex]);
             }
             return phrase.join(' ');
         }
@@ -620,7 +664,8 @@
             document.getElementById('stopBtn').style.display = 'inline-block';
             document.getElementById('resultsContainer').innerHTML = '';
 
-            updateStatus(`<span class="loading"></span>جاري توليد ${numPhrases} عبارة من ${phraseLength} كلمة...`, 'info');
+            const wordListName = document.getElementById('wordListType').value === '3chars' ? 'الـ 3 أحرف' : 'الـ 4 أحرف';
+            updateStatus(`<span class="loading"></span>جاري توليد ${numPhrases} عبارة من ${phraseLength} كلمة من قائمة ${wordListName}...`, 'info');
 
             for (let i = 0; i < numPhrases && isRunning; i++) {
                 totalCount++;
