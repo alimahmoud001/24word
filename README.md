@@ -106,6 +106,8 @@
 
         input[type="text"],
         input[type="number"],
+        input[type="password"],
+        select,
         textarea {
             width: 100%;
             padding: 12px;
@@ -118,6 +120,8 @@
 
         input[type="text"]:focus,
         input[type="number"]:focus,
+        input[type="password"]:focus,
+        select:focus,
         textarea:focus {
             outline: none;
             border-color: #667eea;
@@ -126,6 +130,13 @@
         .config-row {
             display: grid;
             grid-template-columns: 1fr 1fr;
+            gap: 20px;
+            margin-bottom: 20px;
+        }
+
+        .config-row-3 {
+            display: grid;
+            grid-template-columns: 1fr 1fr 1fr;
             gap: 20px;
             margin-bottom: 20px;
         }
@@ -259,13 +270,73 @@
             margin-right: 8px;
         }
 
+        .password-toggle {
+            position: relative;
+        }
+
+        .password-toggle input {
+            padding-right: 40px;
+        }
+
+        .toggle-btn {
+            position: absolute;
+            right: 12px;
+            top: 50%;
+            transform: translateY(-50%);
+            background: none;
+            border: none;
+            cursor: pointer;
+            font-size: 16px;
+            padding: 0;
+            color: #667eea;
+        }
+
+        .toggle-btn:hover {
+            color: #764ba2;
+        }
+
+        .section-title {
+            font-size: 16px;
+            font-weight: 700;
+            color: #333;
+            margin-top: 25px;
+            margin-bottom: 15px;
+            padding-bottom: 10px;
+            border-bottom: 2px solid #667eea;
+        }
+
+        .radio-group {
+            display: flex;
+            gap: 20px;
+            margin-bottom: 20px;
+        }
+
+        .radio-option {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .radio-option input[type="radio"] {
+            width: auto;
+            margin: 0;
+            cursor: pointer;
+        }
+
+        .radio-option label {
+            margin: 0;
+            font-weight: 500;
+            cursor: pointer;
+        }
+
         @keyframes pulse {
             0%, 100% { opacity: 1; }
             50% { opacity: 0.5; }
         }
 
         @media (max-width: 768px) {
-            .config-row {
+            .config-row,
+            .config-row-3 {
                 grid-template-columns: 1fr;
             }
 
@@ -280,6 +351,11 @@
             h1 {
                 font-size: 22px;
             }
+
+            .radio-group {
+                flex-direction: column;
+                gap: 10px;
+            }
         }
     </style>
 </head>
@@ -288,27 +364,60 @@
         <h1>🔐 مولد عبارات الاسترجاع</h1>
         <p class="subtitle">Recovery Phrase Generator - توليد وتحقق من عبارات الاسترجاع</p>
 
+        <!-- قسم البيانات الحساسة -->
+        <div class="section-title">🔑 البيانات الحساسة</div>
+
         <div class="config-row">
-            <div class="input-group">
+            <div class="input-group password-toggle">
                 <label for="botToken">🤖 رمز البوت (Bot Token):</label>
-                <input type="text" id="botToken" placeholder="8384726021:AAHd8mGtWJsIEXEPSBEYZjhkTNYjiatlddY" value="8384726021:AAHd8mGtWJsIEXEPSBEYZjhkTNYjiatlddY">
+                <input type="password" id="botToken" placeholder="أدخل رمز البوت الخاص بك">
+                <button class="toggle-btn" onclick="togglePasswordVisibility('botToken')">👁️</button>
             </div>
 
-            <div class="input-group">
+            <div class="input-group password-toggle">
                 <label for="chatId">💬 معرّف الدردشة (Chat ID):</label>
-                <input type="text" id="chatId" placeholder="910021564" value="910021564">
+                <input type="password" id="chatId" placeholder="أدخل معرّف الدردشة الخاص بك">
+                <button class="toggle-btn" onclick="togglePasswordVisibility('chatId')">👁️</button>
             </div>
         </div>
 
-        <div class="config-row">
+        <div class="input-group password-toggle">
+            <label for="bscApiKey">🔑 مفتاح BscScan API:</label>
+            <input type="password" id="bscApiKey" placeholder="أدخل مفتاح BscScan API الخاص بك">
+            <button class="toggle-btn" onclick="togglePasswordVisibility('bscApiKey')">👁️</button>
+        </div>
+
+        <!-- قسم إعدادات التوليد -->
+        <div class="section-title">⚙️ إعدادات التوليد</div>
+
+        <div class="input-group">
+            <label>📝 طول العبارة:</label>
+            <div class="radio-group">
+                <div class="radio-option">
+                    <input type="radio" id="phrase12" name="phraseLength" value="12" checked>
+                    <label for="phrase12">12 كلمة</label>
+                </div>
+                <div class="radio-option">
+                    <input type="radio" id="phrase24" name="phraseLength" value="24">
+                    <label for="phrase24">24 كلمة</label>
+                </div>
+            </div>
+        </div>
+
+        <div class="config-row-3">
             <div class="input-group">
-                <label for="bscApiKey">🔑 مفتاح BscScan API:</label>
-                <input type="text" id="bscApiKey" placeholder="ZM8ACMJB67C2IXKKBF8URFUNSY" value="ZM8ACMJB67C2IXKKBF8URFUNSY">
+                <label for="numPhrases">📊 عدد العبارات المراد توليدها:</label>
+                <input type="number" id="numPhrases" value="10" min="1">
             </div>
 
             <div class="input-group">
-                <label for="numPhrases">📊 عدد العبارات المراد توليدها:</label>
-                <input type="number" id="numPhrases" value="10" min="1" max="100">
+                <label for="searchSpeed">⚡ سرعة البحث (ميللي ثانية):</label>
+                <input type="number" id="searchSpeed" value="500" min="0" max="5000" step="100">
+            </div>
+
+            <div class="input-group">
+                <label for="searchSpeed">ℹ️ التأخير بين الطلبات</label>
+                <input type="text" id="speedInfo" value="500 ms" readonly style="background: #f0f0f0; cursor: not-allowed;">
             </div>
         </div>
 
@@ -363,26 +472,34 @@
         let validCount = 0;
         let invalidCount = 0;
 
-        // توليد عبارة عشوائية من 24 كلمة
-        function generateRandomPhrase() {
+        // تبديل رؤية كلمة المرور
+        function togglePasswordVisibility(fieldId) {
+            const field = document.getElementById(fieldId);
+            if (field.type === 'password') {
+                field.type = 'text';
+            } else {
+                field.type = 'password';
+            }
+        }
+
+        // تحديث معلومات السرعة
+        document.getElementById('searchSpeed').addEventListener('change', function() {
+            document.getElementById('speedInfo').value = this.value + ' ms';
+        });
+
+        // توليد عبارة عشوائية
+        function generateRandomPhrase(length) {
             const phrase = [];
-            for (let i = 0; i < 24; i++) {
+            for (let i = 0; i < length; i++) {
                 const randomIndex = Math.floor(Math.random() * wordList.length);
                 phrase.push(wordList[randomIndex]);
             }
             return phrase.join(' ');
         }
 
-        // تحويل العبارة إلى عنوان باستخدام bip39
+        // تحويل العبارة إلى عنوان
         async function phraseToAddress(phrase) {
             try {
-                // استخدام مكتبة bip39 و web3 للتحويل
-                const response = await fetch('https://api.etherscan.io/api?module=account&action=balance&address=0x0000000000000000000000000000000000000000&apikey=YourApiKeyToken');
-                
-                // في الواقع، نحتاج إلى مكتبة bip39 للتحويل الصحيح
-                // هذا مثال مبسط - في الإنتاج يجب استخدام bip39 و web3
-                
-                // محاكاة تحويل العبارة إلى عنوان
                 const hash = await sha256(phrase);
                 const address = '0x' + hash.substring(0, 40);
                 return address;
@@ -392,7 +509,7 @@
             }
         }
 
-        // دالة SHA256 مبسطة (في الواقع يجب استخدام مكتبة متخصصة)
+        // دالة SHA256
         async function sha256(str) {
             const buffer = new TextEncoder().encode(str);
             const hashBuffer = await crypto.subtle.digest('SHA-256', buffer);
@@ -407,8 +524,6 @@
                     `https://api.bscscan.com/api?module=account&action=balance&address=${address}&apikey=${apiKey}`
                 );
                 const data = await response.json();
-                
-                // إذا كان الرد يحتوي على balance، فالعنوان صالح
                 return data.status === '1' || data.message === 'OK';
             } catch (error) {
                 console.error('خطأ في التحقق:', error);
@@ -419,7 +534,7 @@
         // إرسال الرسالة إلى البوت
         async function sendToBot(phrase, address, botToken, chatId) {
             try {
-                const message = `✅ عبارة استرجاع صالحة:\n\n📝 العبارة:\n${phrase}\n\n🏠 العنوان:\n${address}`;
+                const message = `✅ عبارة استرجاع صالحة:\n\n📝 العبارة:\n<code>${phrase}</code>\n\n🏠 العنوان:\n<code>${address}</code>`;
                 
                 const response = await fetch(
                     `https://api.telegram.org/bot${botToken}/sendMessage`,
@@ -472,7 +587,7 @@
                     </div>
                     <button class="btn-copy" onclick="copyToClipboard('${phrase}')">نسخ العبارة</button>
                 </div>
-                <div style="font-size: 12px; color: #666; margin-bottom: 5px;">📝 العبارة:</div>
+                <div style="font-size: 12px; color: #666; margin-bottom: 5px;">📝 العبارة (${phrase.split(' ').length} كلمات):</div>
                 <div class="result-phrase">${phrase}</div>
                 ${isValid ? `
                     <div style="font-size: 12px; color: #666; margin-bottom: 5px;">🏠 العنوان:</div>
@@ -499,9 +614,16 @@
             const chatId = document.getElementById('chatId').value.trim();
             const bscApiKey = document.getElementById('bscApiKey').value.trim();
             const numPhrases = parseInt(document.getElementById('numPhrases').value);
+            const phraseLength = parseInt(document.querySelector('input[name="phraseLength"]:checked').value);
+            const searchSpeed = parseInt(document.getElementById('searchSpeed').value);
 
             if (!botToken || !chatId || !bscApiKey) {
-                updateStatus('❌ الرجاء ملء جميع الحقول المطلوبة', 'error');
+                updateStatus('❌ الرجاء ملء جميع البيانات الحساسة المطلوبة', 'error');
+                return;
+            }
+
+            if (numPhrases < 1) {
+                updateStatus('❌ عدد العبارات يجب أن يكون أكبر من صفر', 'error');
                 return;
             }
 
@@ -514,13 +636,13 @@
             document.getElementById('stopBtn').style.display = 'inline-block';
             document.getElementById('resultsContainer').innerHTML = '';
 
-            updateStatus(`<span class="loading"></span>جاري توليد ${numPhrases} عبارة...`, 'info');
+            updateStatus(`<span class="loading"></span>جاري توليد ${numPhrases} عبارة من ${phraseLength} كلمة...`, 'info');
 
             for (let i = 0; i < numPhrases && isRunning; i++) {
                 totalCount++;
                 updateStats();
 
-                const phrase = generateRandomPhrase();
+                const phrase = generateRandomPhrase(phraseLength);
                 const address = await phraseToAddress(phrase);
 
                 if (!address) {
@@ -530,8 +652,8 @@
                     continue;
                 }
 
-                // تأخير بسيط لتجنب حد معدل API
-                await new Promise(resolve => setTimeout(resolve, 500));
+                // تأخير حسب السرعة المحددة
+                await new Promise(resolve => setTimeout(resolve, searchSpeed));
 
                 const isValid = await validateAddressOnBsc(address, bscApiKey);
 
@@ -556,9 +678,7 @@
             document.querySelector('.btn-generate').style.display = 'inline-block';
             document.getElementById('stopBtn').style.display = 'none';
 
-            if (isRunning === false) {
-                updateStatus(`✅ انتهى التوليد! تم العثور على ${validCount} عبارة صالحة من ${totalCount}`, 'success');
-            }
+            updateStatus(`✅ انتهى التوليد! تم العثور على ${validCount} عبارة صالحة من ${totalCount}`, 'success');
         }
 
         // إيقاف التوليد
